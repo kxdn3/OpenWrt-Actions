@@ -15,8 +15,9 @@ echo "========================="
 chmod +x ${GITHUB_WORKSPACE}/lede/subscript.sh
 source ${GITHUB_WORKSPACE}/lede/subscript.sh
 
-# 修改Rockchip内核到6.6版
-sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.6/g' ./target/linux/rockchip/Makefile
+# 更改boot分区大小为1M
+sed -i 's/256/1024/g' target/linux/x86/image/Makefile
+
 # 修改x86内核到6.6版
 sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
 
@@ -40,6 +41,10 @@ sed -i 's/os.date("%c")/os.date("%Y-%m-%d %H:%M:%S")/g' package/feeds/luci/luci-
 # x86型号主页只显示CPU型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
 
+# TTYD 免登录
+sed -i 's|/bin/login|/bin/login -f root|g' feeds/packages/utils/ttyd/files/ttyd.config
+
+
 # ------------------PassWall 科学上网--------------------------
 # 移除 openwrt feeds 自带的核心库
 rm -rf feeds/packages/net/{xray-core,v2ray-core,v2ray-geodata,sing-box,pdnsd-alt}
@@ -48,8 +53,8 @@ git clone https://github.com/xiaorouji/openwrt-passwall-packages package/passwal
 rm -rf package/passwall-packages/{chinadns-ng,naiveproxy,shadowsocks-rust,v2ray-geodata}
 merge_package v5 https://github.com/sbwml/openwrt_helloworld package/passwall-packages chinadns-ng naiveproxy shadowsocks-rust v2ray-geodata
 # app
-git clone -b luci-smartdns-dev --single-branch https://github.com/lwb1978/openwrt-passwall package/passwall-luci
-# git clone https://github.com/xiaorouji/openwrt-passwall package/passwall-luci
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 # ------------------------------------------------------------
 
 # 拉取immortalwrt仓库组件
